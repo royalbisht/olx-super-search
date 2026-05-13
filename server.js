@@ -14,7 +14,7 @@ app.get("/search", async (req, res) => {
 
     const url =
 
-      `https://www.olx.in/api/relevance/v4/search?query=${encodeURIComponent(query)}&size=200`;
+      `https://www.olx.in/api/relevance/v4/search?query=${encodeURIComponent(query)}&size=40`;
 
     console.log("Fetching:", url);
 
