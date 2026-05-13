@@ -7,26 +7,16 @@ app.use(cors());
 
 app.get("/search", async (req, res) => {
 
-  const query =
-    req.query.q || "";
-
   try {
+
+    const query =
+      req.query.q || "";
 
     const url =
 
-      `https://api.olx.in/relevance/v4/search?` +
+      `https://www.olx.in/api/relevance/v4/search?query=${encodeURIComponent(query)}&size=200`;
 
-      `query=${encodeURIComponent(query)}` +
-
-      `&size=200` +
-
-      `&platform=web-desktop` +
-
-      `&lang=en-IN`;
-
-
-
-    console.log(url);
+    console.log("Fetching:", url);
 
     const response =
       await fetch(url, {
@@ -37,24 +27,45 @@ app.get("/search", async (req, res) => {
             "Mozilla/5.0",
 
           "Accept":
-            "application/json"
+            "application/json",
+
+          "Origin":
+            "https://www.olx.in",
+
+          "Referer":
+            "https://www.olx.in/"
 
         }
 
       });
 
-    const data =
-      await response.json();
+    const text =
+      await response.text();
 
-    res.json(data);
+    console.log(
+      "RAW RESPONSE:",
+      text.slice(0, 500)
+    );
+
+    res.setHeader(
+      "Content-Type",
+      "application/json"
+    );
+
+    res.send(text);
 
   }
   catch (err) {
 
-    console.error(err);
+    console.error("SERVER ERROR:", err);
 
     res.status(500).json({
-      error: "Failed"
+
+      error:
+        err.message ||
+
+        "Server failed"
+
     });
 
   }
