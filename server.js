@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import axios from "axios";
 
 const app = express();
 
@@ -16,15 +17,20 @@ app.get("/search", async (req, res) => {
 
       `https://www.olx.in/api/relevance/v4/search?query=${encodeURIComponent(query)}&size=40`;
 
-    console.log("Fetching:", url);
+    console.log(
+      "Fetching:",
+      url
+    );
 
     const response =
-      await fetch(url, {
+      await axios.get(url, {
+
+        timeout: 15000,
 
         headers: {
 
           "User-Agent":
-            "Mozilla/5.0",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
 
           "Accept":
             "application/json",
@@ -39,25 +45,22 @@ app.get("/search", async (req, res) => {
 
       });
 
-    const text =
-      await response.text();
-
     console.log(
-      "RAW RESPONSE:",
-      text.slice(0, 500)
+      "SUCCESS:",
+      response.data?.data?.length
     );
 
-    res.setHeader(
-      "Content-Type",
-      "application/json"
+    res.json(
+      response.data
     );
-
-    res.send(text);
 
   }
   catch (err) {
 
-    console.error("SERVER ERROR:", err);
+    console.error(
+      "SERVER ERROR:",
+      err.message
+    );
 
     res.status(500).json({
 
@@ -69,6 +72,14 @@ app.get("/search", async (req, res) => {
     });
 
   }
+
+});
+
+app.get("/", (req, res) => {
+
+  res.send(
+    "OLX Super Search Backend Running"
+  );
 
 });
 
